@@ -15,6 +15,9 @@ app:
     key: (secret-key)
     access-token-expiration-hours: 1
     refresh-token-expiration-hours: 720
+  wink:
+    client-id: (client-id)
+    client-secret: (client-secret)
 
 server:
   servlet:

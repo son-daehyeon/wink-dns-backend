@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.son_daehyeon.common.api.dto.response.ApiResponse;
 import com.github.son_daehyeon.domain.auth.dto.request.LoginRequest;
 import com.github.son_daehyeon.domain.auth.dto.request.RefreshTokenRequest;
-import com.github.son_daehyeon.domain.auth.dto.request.RegisterRequest;
 import com.github.son_daehyeon.domain.auth.dto.response.LoginResponse;
 import com.github.son_daehyeon.domain.auth.service.AuthService;
 import com.github.son_daehyeon.domain.user.dto.response.UserResponse;
@@ -35,13 +34,6 @@ public class AuthController {
     public ApiResponse<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
 
         return ApiResponse.ok(authService.login(request));
-    }
-
-    @PostMapping("/register")
-    @Operation(summary = "회원가입")
-    public ApiResponse<Void> register(@RequestBody @Valid RegisterRequest request) {
-
-        return ApiResponse.ok(authService.register(request));
     }
 
     @PostMapping("/refresh-token")

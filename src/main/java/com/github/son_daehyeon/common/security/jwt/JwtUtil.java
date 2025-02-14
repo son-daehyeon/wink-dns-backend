@@ -33,24 +33,14 @@ public class JwtUtil {
 
     public String generateAccessToken(User user) {
 
-        return generateAccessToken(user.getId());
-    }
-
-    public String generateAccessToken(String userId) {
-
         return JWT.create()
             .withIssuedAt(Instant.now())
             .withExpiresAt(Instant.now().plus(jwtProperty.getAccessTokenExpirationHours(), ChronoUnit.HOURS))
-            .withClaim("id", userId)
+            .withClaim("id", user.getId())
             .sign(algorithm);
     }
 
     public String generateRefreshToken(User user) {
-
-        return generateRefreshToken(user.getId());
-    }
-
-    public String generateRefreshToken(String userId) {
 
         String token = JWT.create()
             .withIssuedAt(Instant.now())
@@ -58,7 +48,7 @@ public class JwtUtil {
             .sign(algorithm);
 
         RefreshToken refreshToken = RefreshToken.builder()
-            .userId(userId)
+            .userId(user.getId())
             .token(token)
             .ttl(jwtProperty.getRefreshTokenExpirationHours())
             .build();
@@ -79,13 +69,15 @@ public class JwtUtil {
 
     public boolean validateToken(String token) throws TokenExpiredException {
 
-        if (token == null) {
+        if (token == null) return false;
 
+        try {
+            JWT.require(algorithm).build().verify(token);
+            return true;
+        } catch (TokenExpiredException e) {
+            throw e;
+        } catch (Exception e) {
             return false;
         }
-
-        JWT.require(algorithm).build().verify(token);
-
-        return true;
     }
 }

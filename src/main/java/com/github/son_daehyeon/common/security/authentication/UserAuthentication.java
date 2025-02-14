@@ -1,40 +1,35 @@
 package com.github.son_daehyeon.common.security.authentication;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.github.son_daehyeon.domain.user.schema.User;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 @RequiredArgsConstructor
 public class UserAuthentication implements Authentication {
 
     private final User user;
-    private final String password;
 
     @Getter
-    @Setter
-    private boolean authenticated = false;
-
-    public UserAuthentication(User user) {
-        this(user, null);
-    }
+    private final boolean authenticated = true;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        return user.getRole().getAuthorization();
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     @Override
     public String getCredentials() {
 
-        return password;
+        return null;
     }
 
     @Override
@@ -53,5 +48,11 @@ public class UserAuthentication implements Authentication {
     public String getName() {
 
         return user.getId();
+    }
+
+    @Override
+    public void setAuthenticated(boolean value) {
+
+        throw new UnsupportedOperationException();
     }
 }

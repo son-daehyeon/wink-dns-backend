@@ -1,5 +1,11 @@
 package com.github.son_daehyeon.common.security.jwt;
 
+import java.io.IOException;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.son_daehyeon.common.api.dto.response.ApiResponse;
@@ -9,17 +15,13 @@ import com.github.son_daehyeon.domain.auth.exception.AccessTokenExpiredException
 import com.github.son_daehyeon.domain.auth.exception.AuthenticationFailException;
 import com.github.son_daehyeon.domain.user.repository.UserRepository;
 import com.github.son_daehyeon.domain.user.schema.User;
+
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
@@ -41,13 +43,8 @@ public class JwtFilter extends OncePerRequestFilter {
             if (accessToken != null && jwtUtil.validateToken(accessToken)) {
 
                 String id = jwtUtil.extractToken(accessToken);
-                User user = repository.findById(id)
-                    .orElseThrow(AuthenticationFailException::new);
-
-                UserAuthentication authentication = new UserAuthentication(user);
-                authentication.setAuthenticated(true);
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                User user = repository.findById(id).orElseThrow(AuthenticationFailException::new);
+                SecurityContextHolder.getContext().setAuthentication(new UserAuthentication(user));
             }
         } catch (TokenExpiredException e) {
             handleException(response, new AccessTokenExpiredException());
