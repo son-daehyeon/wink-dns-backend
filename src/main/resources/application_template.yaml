@@ -1,0 +1,42 @@
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: test
+    redis:
+      host: localhost
+      port: 6379
+  mvc:
+    log-resolved-exception: false
+
+app:
+  jwt:
+    key: (secret-key)
+    access-token-expiration-hours: 1
+    refresh-token-expiration-hours: 720
+
+server:
+  servlet:
+    context-path: /api
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force-response: true
+
+springdoc:
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  api-docs:
+    groups:
+      enabled: true
+  swagger-ui:
+    path: /docs
+    disable-swagger-default-url: true
+    display-request-duration: true
+    defaultModelsExpandDepth: -1
+    groups-order: asc
+    tags-sorter: alpha
+    operations-sorter: alpha
+  cache:
+    disabled: true
