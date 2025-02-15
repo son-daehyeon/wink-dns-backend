@@ -18,6 +18,7 @@ public class ProxmoxApi extends Api {
 
 	private final ProxmoxProperty proxmoxProperty;
 
+	@SuppressWarnings({"unchecked", "BusyWait"})
 	@SafeVarargs
 	@Override
 	public final Map<String, Object> http(String url, HttpMethod method, Map.Entry<String, String>... bodies) {
@@ -49,7 +50,7 @@ public class ProxmoxApi extends Api {
 				.join();
 		}
 
-		return response;
+		return (Map<String, Object>) response.get("data");
 	}
 
 	private String generateUrl(String sub) {
