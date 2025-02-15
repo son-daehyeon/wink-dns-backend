@@ -3,15 +3,18 @@ package com.github.son_daehyeon.domain.auth.util;
 import java.util.Map;
 import java.util.Objects;
 
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.github.son_daehyeon.common.api.Api;
 import com.github.son_daehyeon.common.api.exception.ApiException;
 import com.github.son_daehyeon.common.property.WinkProperty;
 import com.github.son_daehyeon.domain.user.schema.User;
 
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.JsonNode;
+import kong.unirest.core.Unirest;
+import kong.unirest.core.UnirestInstance;
+import kong.unirest.core.json.JSONObject;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -20,29 +23,34 @@ public class WinkApi {
 
 	private final WinkProperty winkProperty;
 
-	private final Api api;
-
-	@SuppressWarnings({"unchecked"})
 	public User fromToken(String token) {
 
-		Map<String, Object> body = api.http(
-			"https://wink.daehyeon.cloud/api/application/oauth/token",
-			HttpMethod.POST,
-			Map.entry("clientId", winkProperty.getClientId()),
-			Map.entry("clientSecret", winkProperty.getClientSecret()),
-			Map.entry("token", token)
-		);
+		try (UnirestInstance instance = Unirest.spawnInstance()) {
 
-		int statusCode = (int) body.get("statusCode");
-		String error = (String) body.get("error");
-		if (!Objects.isNull(error)) throw new ApiException(HttpStatus.valueOf(statusCode), error);
+			HttpResponse<JsonNode> response = instance.post("https://wink.daehyeon.cloud/api/application/oauth/token")
+				.header("Content-Type", "application/json")
+				.body(Map.ofEntries(
+					Map.entry("clientId", winkProperty.getClientId()),
+					Map.entry("clientSecret", winkProperty.getClientSecret()),
+					Map.entry("token", token)
+				))
+				.asJson();
 
-		Map<String, Object> user = (Map<String, Object>) ((Map<String, Object>) body.get("content")).get("user");
+			if (!response.isSuccess()) throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatus() + " " + response.getStatusText());
 
-		return User.builder()
-			.id((String) user.get("id"))
-			.name((String) user.get("name"))
-			.fee((boolean) user.get("fee"))
-			.build();
+			JSONObject body = response.getBody().getObject();
+
+			int statusCode = body.getInt("statusCode");
+			Object error = body.get("error");
+			if (!Objects.isNull(error)) throw new ApiException(HttpStatus.valueOf(statusCode), error.toString());
+
+			JSONObject user = body.getJSONObject("content").getJSONObject("user");
+
+			return User.builder()
+				.id(user.getString("id"))
+				.name(user.getString("name"))
+				.fee(user.getBoolean("fee"))
+				.build();
+		}
 	}
 }

@@ -37,5 +37,6 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4")
 
     implementation("com.auth0:java-jwt:4.4.0")
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.14")
+    implementation("com.konghq:unirest-java-core:4.4.5")
+    implementation("com.konghq:unirest-objectmapper-jackson:4.2.9")
 }
