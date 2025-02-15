@@ -17,7 +17,13 @@ app:
     refresh-token-expiration-hours: 720
   wink:
     client-id: (client-id)
-    client-secret: (client-secret)
+    client-secret: (client-secret)\
+  proxmox:
+    host: https://127.0.0.1:8006
+    node: pve
+    user: root@pam
+    name: api
+    token: (token)
 
 server:
   servlet:

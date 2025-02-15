@@ -1,11 +1,12 @@
 package com.github.son_daehyeon.common.api.dto.response;
 
-import com.github.son_daehyeon.common.api.exception.ApiException;
-import lombok.Data;
-
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+
+import com.github.son_daehyeon.common.api.exception.ApiException;
+
+import lombok.Data;
 
 @Data
 public class ApiResponse<T> {
@@ -19,6 +20,11 @@ public class ApiResponse<T> {
         this.statusCode = statusCode;
         this.error = error;
         this.content = content;
+    }
+
+    public static <T> ApiResponse<T> ok() {
+
+        return new ApiResponse<>(200, null, null);
     }
 
     public static <T> ApiResponse<T> ok(T content) {
