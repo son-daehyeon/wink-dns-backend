@@ -1,5 +1,7 @@
 package com.github.son_daehyeon.domain.instance.service;
 
+import java.util.Map;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +48,7 @@ public class InstanceStatusService {
         checkAlreadyRunning(instance);
 
         proxmoxApi.http("/lxc/%d/status/start".formatted(instance.getVmid()), HttpMethod.POST);
+        proxmoxApi.http("/lxc/%d/config".formatted(instance.getVmid()), HttpMethod.PUT, Map.entry("onboot", "1"));
     }
 
     public void shutdown(String id, User user) {
@@ -57,6 +60,7 @@ public class InstanceStatusService {
         checkNotRunning(instance);
 
         proxmoxApi.http("/lxc/%d/status/shutdown".formatted(instance.getVmid()), HttpMethod.POST);
+        proxmoxApi.http("/lxc/%d/config".formatted(instance.getVmid()), HttpMethod.PUT, Map.entry("onboot", "0"));
     }
 
     public void stop(String id, User user) {
@@ -68,6 +72,7 @@ public class InstanceStatusService {
         checkNotRunning(instance);
 
         proxmoxApi.http("/lxc/%d/status/stop".formatted(instance.getVmid()), HttpMethod.POST);
+        proxmoxApi.http("/lxc/%d/config".formatted(instance.getVmid()), HttpMethod.PUT, Map.entry("onboot", "0"));
     }
 
     public void restart(String id, User user) {
@@ -79,6 +84,7 @@ public class InstanceStatusService {
         checkNotRunning(instance);
 
         proxmoxApi.http("/lxc/%d/status/reboot".formatted(instance.getVmid()), HttpMethod.POST);
+        proxmoxApi.http("/lxc/%d/config".formatted(instance.getVmid()), HttpMethod.PUT, Map.entry("onboot", "1"));
     }
 
     private void checkAlreadyRunning(Instance instance) {
