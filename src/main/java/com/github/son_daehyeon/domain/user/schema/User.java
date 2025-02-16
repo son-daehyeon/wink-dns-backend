@@ -13,7 +13,9 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 public class User extends BaseSchema {
 
+    String email;
     String name;
+    String avatar;
     boolean fee;
 }
 

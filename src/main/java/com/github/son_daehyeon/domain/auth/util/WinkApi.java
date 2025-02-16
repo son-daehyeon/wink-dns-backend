@@ -48,7 +48,9 @@ public class WinkApi {
 
 			return User.builder()
 				.id(user.getString("id"))
+				.email(user.getString("email"))
 				.name(user.getString("name"))
+				.avatar(user.get("avatar") instanceof String ? user.getString("avatar") : null)
 				.fee(user.getBoolean("fee"))
 				.build();
 		}
