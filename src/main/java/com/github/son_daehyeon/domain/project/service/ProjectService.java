@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.github.son_daehyeon.domain.project.__sub__.instance.repository.InstanceRepository;
 import com.github.son_daehyeon.domain.project.__sub__.instance.schema.Instance;
 import com.github.son_daehyeon.domain.project.dto.request.CreateProjectRequest;
+import com.github.son_daehyeon.domain.project.dto.request.InviteProjectRequest;
 import com.github.son_daehyeon.domain.project.dto.response.ProjectResponse;
 import com.github.son_daehyeon.domain.project.dto.response.ProjectsResponse;
 import com.github.son_daehyeon.domain.project.exception.AlreadyProjectInvitedException;
@@ -74,18 +75,29 @@ public class ProjectService {
             .build();
     }
 
-    public ProjectResponse inviteUser(String projectId, String userId, User user) {
+    public ProjectResponse inviteUser(String projectId, InviteProjectRequest dto, User user) {
 
         Project project = projectRepository.findById(projectId)
             .filter(p -> p.getParticipants().contains(user))
             .orElseThrow(ProjectNotFoundException::new);
 
-        User target = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        List<User> targets = dto.users()
+            .stream()
+            .map(userRepository::findById)
+            .map((target) -> target.orElseThrow(UserNotFoundException::new))
+            .peek(target -> {
+                if (project.getParticipants().contains(target)) {
+                    throw new AlreadyProjectParticipantException();
+                }
+            })
+            .peek(target -> {
+                if (project.getPending().contains(target)) {
+                    throw new AlreadyProjectInvitedException();
+                }
+            })
+            .toList();
 
-        if (project.getParticipants().contains(target)) throw new AlreadyProjectParticipantException();
-        if (project.getPending().contains(target)) throw new AlreadyProjectInvitedException();
-
-        project.getPending().add(user);
+        project.getPending().addAll(targets);
 
         return ProjectResponse.builder()
             .project(projectRepository.save(project))

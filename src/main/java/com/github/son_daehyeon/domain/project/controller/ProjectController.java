@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.son_daehyeon.common.api.dto.response.ApiResponse;
 import com.github.son_daehyeon.common.docs.swagger.SwaggerConfig;
 import com.github.son_daehyeon.domain.project.dto.request.CreateProjectRequest;
+import com.github.son_daehyeon.domain.project.dto.request.InviteProjectRequest;
 import com.github.son_daehyeon.domain.project.dto.response.ProjectResponse;
 import com.github.son_daehyeon.domain.project.dto.response.ProjectsResponse;
 import com.github.son_daehyeon.domain.project.service.ProjectService;
@@ -56,11 +57,11 @@ public class ProjectController {
         return ApiResponse.ok(projectService.createProject(request, user));
     }
 
-    @PostMapping("/{projectId}/invite/{userId}")
+    @PostMapping("/{projectId}/invite")
     @Operation(summary = "프로젝트 초대")
-    public ApiResponse<ProjectResponse> inviteUser(@PathVariable String projectId, @PathVariable String userId, @AuthenticationPrincipal User user) {
+    public ApiResponse<ProjectResponse> inviteUser(@PathVariable String projectId, @RequestBody @Valid InviteProjectRequest request, @AuthenticationPrincipal User user) {
 
-        return ApiResponse.ok(projectService.inviteUser(projectId, userId, user));
+        return ApiResponse.ok(projectService.inviteUser(projectId, request, user));
     }
 
     @PostMapping("/{projectId}/invite/accept")
