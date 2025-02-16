@@ -27,8 +27,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final JwtUtil jwtUtil;
     private final UserRepository repository;
+
+    private final JwtUtil jwtUtil;
 
     @Override
     public void doFilterInternal(

@@ -11,6 +11,8 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 @Configuration
 public class SwaggerConfig {
 
+	public static final String SWAGGER_AUTH = "JWT";
+
 	@Bean
 	public OpenAPI openAPI() {
 
@@ -30,6 +32,7 @@ public class SwaggerConfig {
 	private SecurityScheme securityScheme() {
 
 		return new SecurityScheme()
+			.name(SWAGGER_AUTH)
 			.type(SecurityScheme.Type.HTTP)
 			.bearerFormat("JWT")
 			.scheme("bearer");

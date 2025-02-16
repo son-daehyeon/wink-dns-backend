@@ -3,7 +3,8 @@ package com.github.son_daehyeon.common.security.jwt;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -13,22 +14,19 @@ import com.github.son_daehyeon.domain.auth.repository.RefreshTokenRepository;
 import com.github.son_daehyeon.domain.auth.schema.RefreshToken;
 import com.github.son_daehyeon.domain.user.schema.User;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
-@Component
+@Configuration
 @RequiredArgsConstructor
 public class JwtUtil {
 
     private final JwtProperty jwtProperty;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    private Algorithm algorithm;
+    @Bean
+    public Algorithm algorithm() {
 
-    @PostConstruct
-    public void init() {
-
-        algorithm = Algorithm.HMAC256(jwtProperty.getKey());
+        return Algorithm.HMAC256(jwtProperty.getKey());
     }
 
     public String generateAccessToken(User user) {
@@ -37,7 +35,7 @@ public class JwtUtil {
             .withIssuedAt(Instant.now())
             .withExpiresAt(Instant.now().plus(jwtProperty.getAccessTokenExpirationHours(), ChronoUnit.HOURS))
             .withClaim("id", user.getId())
-            .sign(algorithm);
+            .sign(algorithm());
     }
 
     public String generateRefreshToken(User user) {
@@ -45,7 +43,7 @@ public class JwtUtil {
         String token = JWT.create()
             .withIssuedAt(Instant.now())
             .withExpiresAt(Instant.now().plus(jwtProperty.getRefreshTokenExpirationHours(), ChronoUnit.HOURS))
-            .sign(algorithm);
+            .sign(algorithm());
 
         RefreshToken refreshToken = RefreshToken.builder()
             .userId(user.getId())
@@ -60,7 +58,7 @@ public class JwtUtil {
 
     public String extractToken(String token) {
 
-        return JWT.require(algorithm)
+        return JWT.require(algorithm())
             .build()
             .verify(token)
             .getClaim("id")
@@ -72,7 +70,7 @@ public class JwtUtil {
         if (token == null) return false;
 
         try {
-            JWT.require(algorithm).build().verify(token);
+            JWT.require(algorithm()).build().verify(token);
             return true;
         } catch (TokenExpiredException e) {
             throw e;

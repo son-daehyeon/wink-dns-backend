@@ -31,6 +31,7 @@ public class AuthService {
     public LoginResponse login(LoginRequest dto) {
 
         User user = userRepository.save(winkApi.fromToken(dto.token()));
+
         if (!user.isFee()) throw new FeeNotPaidException();
 
         String accessToken = jwtUtil.generateAccessToken(user);

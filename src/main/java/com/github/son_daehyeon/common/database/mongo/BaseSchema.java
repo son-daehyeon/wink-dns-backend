@@ -1,6 +1,10 @@
 package com.github.son_daehyeon.common.database.mongo;
 
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +17,12 @@ public abstract class BaseSchema {
 
 	@Id
 	String id;
+
+	@CreatedDate
+	LocalDateTime createdAt;
+
+	@LastModifiedDate
+	LocalDateTime updatedAt;
 
 	@Override
 	public boolean equals(Object obj) {
