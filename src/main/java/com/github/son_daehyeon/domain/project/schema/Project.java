@@ -18,6 +18,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 public class Project extends BaseSchema {
 
+	String icon;
 	String name;
 
 	@DBRef

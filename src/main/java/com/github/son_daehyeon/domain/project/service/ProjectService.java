@@ -11,6 +11,7 @@ import com.github.son_daehyeon.domain.project.dto.response.ProjectResponse;
 import com.github.son_daehyeon.domain.project.dto.response.ProjectsResponse;
 import com.github.son_daehyeon.domain.project.exception.AlreadyProjectInvitedException;
 import com.github.son_daehyeon.domain.project.exception.AlreadyProjectParticipantException;
+import com.github.son_daehyeon.domain.project.exception.CannotDeleteProjectException;
 import com.github.son_daehyeon.domain.project.exception.ProjectHasInstanceException;
 import com.github.son_daehyeon.domain.project.exception.ProjectNotFoundException;
 import com.github.son_daehyeon.domain.project.repository.ProjectRepository;
@@ -31,8 +32,24 @@ public class ProjectService {
 
     public ProjectsResponse myProjects(User user) {
 
+        List<Project> projects = projectRepository.findAllByParticipantsContains(user);
+
+        if (projects.isEmpty()) {
+
+            projectRepository.save(
+                Project.builder()
+                    .icon("box")
+                    .name("데모 프로젝트")
+                    .participants(List.of(user))
+                    .pending(List.of())
+                    .build()
+            );
+
+            projects = projectRepository.findAllByParticipantsContains(user);
+        }
+
         return ProjectsResponse.builder()
-            .projects(projectRepository.findAllByParticipantsContains(user))
+            .projects(projects)
             .build();
     }
 
@@ -46,8 +63,10 @@ public class ProjectService {
     public ProjectResponse createProject(CreateProjectRequest dto, User user) {
 
         Project project = Project.builder()
+            .icon(dto.icon())
             .name(dto.name())
             .participants(List.of(user))
+            .pending(List.of())
             .build();
 
         return ProjectResponse.builder()
@@ -73,12 +92,40 @@ public class ProjectService {
             .build();
     }
 
+    public ProjectResponse acceptInvite(String projectId, User user) {
+
+        Project project = projectRepository.findById(projectId)
+            .filter(p -> p.getPending().contains(user))
+            .orElseThrow(ProjectNotFoundException::new);
+
+        project.getParticipants().add(user);
+        project.getPending().remove(user);
+
+        return ProjectResponse.builder()
+            .project(projectRepository.save(project))
+            .build();
+    }
+
+    public ProjectResponse declineInvite(String projectId, User user) {
+
+        Project project = projectRepository.findById(projectId)
+            .filter(p -> p.getPending().contains(user))
+            .orElseThrow(ProjectNotFoundException::new);
+
+        project.getPending().remove(user);
+
+        return ProjectResponse.builder()
+            .project(projectRepository.save(project))
+            .build();
+    }
+
     public ProjectResponse updateProject(String projectId, CreateProjectRequest dto, User user) {
 
         Project project = projectRepository.findById(projectId)
             .filter(p -> p.getParticipants().contains(user))
             .orElseThrow(ProjectNotFoundException::new);
 
+        project.setIcon(dto.icon());
         project.setName(dto.name());
 
         return ProjectResponse.builder()
@@ -92,8 +139,13 @@ public class ProjectService {
             .filter(p -> p.getParticipants().contains(user))
             .orElseThrow(ProjectNotFoundException::new);
 
-        List<Instance> projects = instanceRepository.findAllByProject(project);
-        if (!projects.isEmpty()) throw new ProjectHasInstanceException(projects);
+        if (projectRepository.findAllByParticipantsContains(user).size() <= 1) {
+
+            throw new CannotDeleteProjectException();
+        }
+
+        List<Instance> instances = instanceRepository.findAllByProject(project);
+        if (!instances.isEmpty()) throw new ProjectHasInstanceException(instances);
 
         projectRepository.delete(project);
     }

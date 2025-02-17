@@ -63,6 +63,20 @@ public class ProjectController {
         return ApiResponse.ok(projectService.inviteUser(projectId, userId, user));
     }
 
+    @PostMapping("/{projectId}/invite/accept")
+    @Operation(summary = "프로젝트 초대 수락")
+    public ApiResponse<ProjectResponse> acceptInvite(@PathVariable String projectId, @AuthenticationPrincipal User user) {
+
+        return ApiResponse.ok(projectService.acceptInvite(projectId, user));
+    }
+
+    @PostMapping("/{projectId}/invite/decline")
+    @Operation(summary = "프로젝트 초대 거절")
+    public ApiResponse<ProjectResponse> declineInvite(@PathVariable String projectId, @AuthenticationPrincipal User user) {
+
+        return ApiResponse.ok(projectService.declineInvite(projectId, user));
+    }
+
     @PutMapping("/{projectId}")
     @Operation(summary = "프로젝트 수정")
     public ApiResponse<ProjectResponse> updateProject(@PathVariable String projectId, @RequestBody @Valid CreateProjectRequest request, @AuthenticationPrincipal User user) {
