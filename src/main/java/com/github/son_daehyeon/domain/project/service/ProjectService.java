@@ -12,7 +12,10 @@ import com.github.son_daehyeon.domain.project.dto.response.ProjectResponse;
 import com.github.son_daehyeon.domain.project.dto.response.ProjectsResponse;
 import com.github.son_daehyeon.domain.project.exception.AlreadyProjectInvitedException;
 import com.github.son_daehyeon.domain.project.exception.AlreadyProjectParticipantException;
+import com.github.son_daehyeon.domain.project.exception.CannotDeleteMyselfException;
 import com.github.son_daehyeon.domain.project.exception.CannotDeleteProjectException;
+import com.github.son_daehyeon.domain.project.exception.NotInMemberException;
+import com.github.son_daehyeon.domain.project.exception.NotInvitedException;
 import com.github.son_daehyeon.domain.project.exception.ProjectHasInstanceException;
 import com.github.son_daehyeon.domain.project.exception.ProjectNotFoundException;
 import com.github.son_daehyeon.domain.project.repository.ProjectRepository;
@@ -131,6 +134,23 @@ public class ProjectService {
             .build();
     }
 
+    public ProjectResponse deleteInvite(String projectId, String userId, User user) {
+
+        User target = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        Project project = projectRepository.findById(projectId)
+            .filter(p -> p.getParticipants().contains(user))
+            .orElseThrow(ProjectNotFoundException::new);
+
+        if (!project.getPending().contains(target)) throw new NotInvitedException();
+
+        project.getPending().remove(target);
+
+        return ProjectResponse.builder()
+            .project(projectRepository.save(project))
+            .build();
+    }
+
     public ProjectResponse updateProject(String projectId, CreateProjectRequest dto, User user) {
 
         Project project = projectRepository.findById(projectId)
@@ -160,5 +180,24 @@ public class ProjectService {
         if (!instances.isEmpty()) throw new ProjectHasInstanceException(instances);
 
         projectRepository.delete(project);
+    }
+
+    public ProjectResponse deleteMember(String projectId, String userId, User user) {
+
+        User target = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        if (target.equals(user)) throw new CannotDeleteMyselfException();
+
+        Project project = projectRepository.findById(projectId)
+            .filter(p -> p.getParticipants().contains(user))
+            .orElseThrow(ProjectNotFoundException::new);
+
+        if (!project.getParticipants().contains(target)) throw new NotInMemberException();
+
+        project.getParticipants().remove(target);
+
+        return ProjectResponse.builder()
+            .project(projectRepository.save(project))
+            .build();
     }
 }

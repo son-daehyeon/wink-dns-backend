@@ -78,6 +78,13 @@ public class ProjectController {
         return ApiResponse.ok(projectService.declineInvite(projectId, user));
     }
 
+    @DeleteMapping("/{projectId}/invite/{userId}")
+    @Operation(summary = "프로젝트 초대 삭제")
+    public ApiResponse<ProjectResponse> deleteInvite(@PathVariable String projectId, @PathVariable String userId, @AuthenticationPrincipal User user) {
+
+        return ApiResponse.ok(projectService.deleteInvite(projectId, userId, user));
+    }
+
     @PutMapping("/{projectId}")
     @Operation(summary = "프로젝트 수정")
     public ApiResponse<ProjectResponse> updateProject(@PathVariable String projectId, @RequestBody @Valid CreateProjectRequest request, @AuthenticationPrincipal User user) {
@@ -92,5 +99,12 @@ public class ProjectController {
         projectService.deleteProject(projectId, user);
 
         return ApiResponse.ok();
+    }
+
+    @DeleteMapping("/{projectId}/member/{userId}")
+    @Operation(summary = "프로젝트 멤버 삭제")
+    public ApiResponse<ProjectResponse> deleteMember(@PathVariable String projectId, @PathVariable String userId, @AuthenticationPrincipal User user) {
+
+        return ApiResponse.ok(projectService.deleteMember(projectId, userId, user));
     }
 }
