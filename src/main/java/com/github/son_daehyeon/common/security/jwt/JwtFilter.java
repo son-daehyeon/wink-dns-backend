@@ -1,6 +1,7 @@
 package com.github.son_daehyeon.common.security.jwt;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -74,5 +75,13 @@ public class JwtFilter extends OncePerRequestFilter {
         response.addHeader("Content-Type", "application/json");
         response.getWriter().write(content);
         response.getWriter().flush();
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+
+        String uri  = request.getRequestURI();
+
+        return Stream.of("/api/auth/refresh-token").anyMatch(uri::equalsIgnoreCase);
     }
 }

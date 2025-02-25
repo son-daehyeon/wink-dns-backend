@@ -8,9 +8,6 @@ import java.util.Set;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
-import com.github.son_daehyeon.domain.project.exception.ProjectNotFoundException;
-import com.github.son_daehyeon.domain.project.repository.ProjectRepository;
-import com.github.son_daehyeon.domain.project.schema.Project;
 import com.github.son_daehyeon.domain.project.__sub__.instance.constant.OsType;
 import com.github.son_daehyeon.domain.project.__sub__.instance.dto.request.CreateInstanceRequest;
 import com.github.son_daehyeon.domain.project.__sub__.instance.dto.request.UpdateInstanceRequest;
@@ -19,8 +16,13 @@ import com.github.son_daehyeon.domain.project.__sub__.instance.dto.response.Inst
 import com.github.son_daehyeon.domain.project.__sub__.instance.exception.CannotShrinkDiskException;
 import com.github.son_daehyeon.domain.project.__sub__.instance.exception.InstanceNotFouncException;
 import com.github.son_daehyeon.domain.project.__sub__.instance.repository.InstanceRepository;
+import com.github.son_daehyeon.domain.project.__sub__.instance.repository.VmidRepository;
 import com.github.son_daehyeon.domain.project.__sub__.instance.schema.Instance;
+import com.github.son_daehyeon.domain.project.__sub__.instance.schema.Vmid;
 import com.github.son_daehyeon.domain.project.__sub__.instance.util.ProxmoxApi;
+import com.github.son_daehyeon.domain.project.exception.ProjectNotFoundException;
+import com.github.son_daehyeon.domain.project.repository.ProjectRepository;
+import com.github.son_daehyeon.domain.project.schema.Project;
 import com.github.son_daehyeon.domain.user.schema.User;
 
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class InstanceService {
 
     private final ProjectRepository projectRepository;
     private final InstanceRepository instanceRepository;
+    private final VmidRepository vmidRepository;
 
     private final ProxmoxApi proxmoxApi;
 
@@ -154,7 +157,7 @@ public class InstanceService {
 
     private int nextVmid() {
 
-        return instanceRepository.findTopByOrderByVmidDesc().map(Instance::getVmid).orElse(1000) + 1;
+        return vmidRepository.findTopByOrderByVmidDesc().map(Vmid::getVmid).orElse(10001);
     }
 
     private String generateIp() {

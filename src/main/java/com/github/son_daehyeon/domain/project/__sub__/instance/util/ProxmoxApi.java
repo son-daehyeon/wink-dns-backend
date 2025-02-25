@@ -1,6 +1,9 @@
 package com.github.son_daehyeon.domain.project.__sub__.instance.util;
 
+import java.net.http.HttpConnectTimeoutException;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.http.HttpMethod;
@@ -15,6 +18,7 @@ import kong.unirest.core.HttpRequestWithBody;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.JsonNode;
 import kong.unirest.core.Unirest;
+import kong.unirest.core.UnirestException;
 import kong.unirest.core.UnirestInstance;
 import lombok.RequiredArgsConstructor;
 
@@ -25,16 +29,20 @@ public class ProxmoxApi {
 	private final ProxmoxProperty proxmoxProperty;
 
 	@SafeVarargs
-	public final JsonNode http(String url, HttpMethod method, Map.Entry<String, String>... bodies) {
+	public final Optional<JsonNode> http(String url, HttpMethod method, Map.Entry<String, String>... bodies) {
 
 		try (UnirestInstance instance = Unirest.spawnInstance()) {
 
-			HttpRequestWithBody request = instance.request(method.name(), generateUrl(url)).header("Authorization", generateToken());
-			HttpResponse<JsonNode> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT) || method.equals(HttpMethod.PATCH)
-				? request.contentType(ContentType.APPLICATION_JSON).body(Map.ofEntries(bodies)).asJson()
-				: request.asJson();
+			HttpRequestWithBody request = instance.request(method.name(), generateUrl(url))
+				.header("Authorization", generateToken());
+			HttpResponse<JsonNode> response =
+				method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT) || method.equals(HttpMethod.PATCH)
+					? request.contentType(ContentType.APPLICATION_JSON).body(Map.ofEntries(bodies)).asJson()
+					: request.asJson();
 
-			if (!response.isSuccess()) throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatus() + " " + response.getStatusText());
+			if (!response.isSuccess())
+				throw new ApiException(HttpStatus.valueOf(response.getStatus()),
+					response.getBody().getObject().optString("message", "클라우드와 연결하던 중 오류가 발생했습니다."));
 
 			Object data = response.getBody().getObject().get("data");
 
@@ -56,14 +64,24 @@ public class ProxmoxApi {
 							response1 = instance.request("GET", generateUrl("/tasks/%s/status".formatted(upid)))
 								.header("Authorization", generateToken())
 								.asJson();
-						} while (!response1.getBody().getObject().getJSONObject("data").getString("status").equals("stopped"));
+						} while (!response1.getBody()
+							.getObject()
+							.getJSONObject("data")
+							.getString("status")
+							.equals("stopped"));
 
-						return response.getBody();
+						return Optional.of(response.getBody());
 					})
 					.join();
 			}
 
-			return new JsonNode(data.toString());
+			return Objects.isNull(data) ? Optional.empty() : Optional.of(new JsonNode(data.toString()));
+		} catch (UnirestException e) {
+			if (e.getCause().getClass().equals(HttpConnectTimeoutException.class)) {
+				throw new ApiException(HttpStatus.BAD_GATEWAY, "호스트 서버와 연결할 수 없습니다");
+			} else {
+				throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			}
 		}
 	}
 

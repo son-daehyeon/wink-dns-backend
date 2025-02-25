@@ -9,7 +9,7 @@ import com.github.son_daehyeon.domain.auth.dto.response.LoginResponse;
 import com.github.son_daehyeon.domain.auth.exception.AuthenticationFailException;
 import com.github.son_daehyeon.domain.auth.exception.FeeNotPaidException;
 import com.github.son_daehyeon.domain.auth.exception.InvalidRefreshTokenException;
-import com.github.son_daehyeon.domain.auth.repository.RefreshTokenRepository;
+import com.github.son_daehyeon.domain.auth.repository.RefreshTokenRedisRepository;
 import com.github.son_daehyeon.domain.auth.schema.RefreshToken;
 import com.github.son_daehyeon.domain.auth.util.WinkApi;
 import com.github.son_daehyeon.domain.user.dto.response.UserResponse;
@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
     private final JwtUtil jwtUtil;
     private final WinkApi winkApi;
@@ -45,8 +45,8 @@ public class AuthService {
 
     public LoginResponse refreshToken(RefreshTokenRequest dto) {
 
-        RefreshToken token = refreshTokenRepository.findByToken(dto.token()).orElseThrow(InvalidRefreshTokenException::new);
-        refreshTokenRepository.delete(token);
+        RefreshToken token = refreshTokenRedisRepository.findByToken(dto.token()).orElseThrow(InvalidRefreshTokenException::new);
+        refreshTokenRedisRepository.delete(token);
 
         User user = userRepository.findById(token.userId()).orElseThrow(AuthenticationFailException::new);
 

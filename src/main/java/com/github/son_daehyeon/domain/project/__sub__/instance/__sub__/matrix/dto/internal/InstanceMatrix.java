@@ -9,19 +9,19 @@ public record InstanceMatrix(
 
 	LocalDateTime time,
 
-	double maxcpu,
-	double cpu,
+	long maxCpu,
+	long currentCpu,
 
-	double maxmem,
-	double mem,
+	long maxMemory,
+	long currentMemory,
 
-	double maxdisk,
-	double disk,
+	long maxDisk,
+	long currentDisk,
 
-	double diskread,
-	double diskwrite,
+	long diskInput,
+	long diskOutput,
 
-	double netin,
-	double netout
-	) {
+	long networkInput,
+	long networkOutput
+) {
 }

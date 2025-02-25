@@ -10,7 +10,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.github.son_daehyeon.common.property.JwtProperty;
-import com.github.son_daehyeon.domain.auth.repository.RefreshTokenRepository;
+import com.github.son_daehyeon.domain.auth.repository.RefreshTokenRedisRepository;
 import com.github.son_daehyeon.domain.auth.schema.RefreshToken;
 import com.github.son_daehyeon.domain.user.schema.User;
 
@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class JwtUtil {
 
     private final JwtProperty jwtProperty;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
     @Bean
     public Algorithm algorithm() {
@@ -51,7 +51,7 @@ public class JwtUtil {
             .ttl(jwtProperty.getRefreshTokenExpirationHours())
             .build();
 
-        refreshTokenRepository.save(refreshToken);
+        refreshTokenRedisRepository.save(refreshToken);
 
         return token;
     }

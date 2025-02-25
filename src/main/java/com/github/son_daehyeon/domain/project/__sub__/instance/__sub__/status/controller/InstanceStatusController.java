@@ -62,13 +62,4 @@ public class InstanceStatusController {
 
         return ApiResponse.ok();
     }
-
-    @PostMapping("/restart")
-    @Operation(summary = "인스턴스 재시작")
-    public ApiResponse<Void> restart(@PathVariable String projectId, @PathVariable String instanceId, @AuthenticationPrincipal User user) {
-
-        instanceStatusService.restart(projectId, instanceId, user);
-
-        return ApiResponse.ok();
-    }
 }

@@ -39,7 +39,7 @@ public class InstanceStatusService {
             .filter(x -> x.getProject().equals(project))
             .orElseThrow(InstanceNotFouncException::new);
 
-        JSONObject response = proxmoxApi.http("/lxc/%d/status/current".formatted(instance.getVmid()), HttpMethod.GET).getObject();
+        JSONObject response = proxmoxApi.http("/lxc/%d/status/current".formatted(instance.getVmid()), HttpMethod.GET).orElseThrow().getObject();
 
         return InstanceStatusResponse.builder()
             .running(response.getString("status").equals("running"))
@@ -95,25 +95,9 @@ public class InstanceStatusService {
         proxmoxApi.http("/lxc/%d/config".formatted(instance.getVmid()), HttpMethod.PUT, Map.entry("onboot", "0"));
     }
 
-    public void restart(String projectId, String instanceId, User user) {
-
-        Project project = projectRepository.findById(projectId)
-            .filter(p -> p.getParticipants().contains(user))
-            .orElseThrow(ProjectNotFoundException::new);
-
-        Instance instance = instanceRepository.findById(instanceId)
-            .filter(x -> x.getProject().equals(project))
-            .orElseThrow(InstanceNotFouncException::new);
-
-        checkNotRunning(instance);
-
-        proxmoxApi.http("/lxc/%d/status/reboot".formatted(instance.getVmid()), HttpMethod.POST);
-        proxmoxApi.http("/lxc/%d/config".formatted(instance.getVmid()), HttpMethod.PUT, Map.entry("onboot", "1"));
-    }
-
     private void checkAlreadyRunning(Instance instance) {
 
-        JSONObject response = proxmoxApi.http("/lxc/%d/status/current".formatted(instance.getVmid()), HttpMethod.GET).getObject();
+        JSONObject response = proxmoxApi.http("/lxc/%d/status/current".formatted(instance.getVmid()), HttpMethod.GET).orElseThrow().getObject();
         boolean running = response.getString("status").equals("running");
 
         if (running) throw new InstanceAlreadyRunningException();
@@ -121,7 +105,7 @@ public class InstanceStatusService {
 
     public void checkNotRunning(Instance instance) {
 
-        JSONObject response = proxmoxApi.http("/lxc/%d/status/current".formatted(instance.getVmid()), HttpMethod.GET).getObject();
+        JSONObject response = proxmoxApi.http("/lxc/%d/status/current".formatted(instance.getVmid()), HttpMethod.GET).orElseThrow().getObject();
         boolean running = response.getString("status").equals("running");
 
         if (!running) throw new InstanceIsNotRunningException();
