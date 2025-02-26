@@ -25,7 +25,9 @@ import com.github.son_daehyeon.domain.project.repository.ProjectRepository;
 import com.github.son_daehyeon.domain.project.schema.Project;
 import com.github.son_daehyeon.domain.user.schema.User;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.Synchronized;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +38,13 @@ public class InstanceService {
     private final VmidRepository vmidRepository;
 
     private final ProxmoxApi proxmoxApi;
+
+    @PostConstruct
+    public void init() {
+        if (vmidRepository.findAll().isEmpty()) {
+            vmidRepository.save(Vmid.builder().vmid(1000).build());
+        }
+    }
 
     public InstancesResponse myInstances(String projectId, User user) {
 
@@ -56,7 +65,7 @@ public class InstanceService {
             .filter(p -> p.getParticipants().contains(user))
             .orElseThrow(ProjectNotFoundException::new);
 
-        int vmid = nextVmid();
+        int vmid = nextVmid().getVmid();
         String ip = generateIp();
 
         proxmoxApi.http(
@@ -155,9 +164,13 @@ public class InstanceService {
         instanceRepository.delete(instance);
     }
 
-    private int nextVmid() {
+    @Synchronized
+    private Vmid nextVmid() {
 
-        return vmidRepository.findTopByOrderByVmidDesc().map(Vmid::getVmid).orElse(10001);
+        Vmid vmid = vmidRepository.findAll().get(0);
+        vmid.setVmid(vmid.getVmid() + 1);
+        vmid = vmidRepository.save(vmid);
+        return vmid;
     }
 
     private String generateIp() {

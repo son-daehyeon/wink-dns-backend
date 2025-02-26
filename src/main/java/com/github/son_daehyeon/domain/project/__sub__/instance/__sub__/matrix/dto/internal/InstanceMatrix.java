@@ -15,6 +15,9 @@ public record InstanceMatrix(
 	long maxMemory,
 	long currentMemory,
 
+	long maxSwap,
+	long currentSwap,
+
 	long maxDisk,
 	long currentDisk,
 

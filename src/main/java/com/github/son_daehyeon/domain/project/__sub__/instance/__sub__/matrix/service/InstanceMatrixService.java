@@ -96,6 +96,8 @@ public class InstanceMatrixService {
             .currentCpu((long) (parse(data, "cpu", 0) * 100))
             .maxMemory(formatBytes(parse(data, "maxmem", 0), "MB"))
             .currentMemory(formatBytes(parse(data, "mem", 0), "MB"))
+            .maxSwap(formatBytes(parse(data, "maxswap", 0), "MB"))
+            .currentSwap(formatBytes(parse(data, "swap", 0), "MB"))
             .maxDisk(formatBytes(parse(data, "maxdisk", 0), "GB"))
             .currentDisk(formatBytes(parse(data, "disk", 0), "GB"))
             .diskInput(formatBytes(parse(data, "diskread", 0), "MB"))
