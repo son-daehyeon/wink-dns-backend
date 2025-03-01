@@ -5,11 +5,10 @@ plugins {
 }
 
 group = "com.github.son-daehyeon"
-version = "1.0"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
