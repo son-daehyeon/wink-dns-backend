@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 
 import com.github.son_daehyeon.common.api.exception.ApiException;
-import com.github.son_daehyeon.domain.project.__sub__.instance.schema.Instance;
+import com.github.son_daehyeon.domain.project.$instance.schema.Instance;
 
 public class ProjectHasInstanceException extends ApiException {
 

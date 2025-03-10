@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.github.son_daehyeon.domain.project.__sub__.instance.repository.InstanceRepository;
-import com.github.son_daehyeon.domain.project.__sub__.instance.schema.Instance;
+import com.github.son_daehyeon.domain.project.$instance.repository.InstanceRepository;
+import com.github.son_daehyeon.domain.project.$instance.schema.Instance;
 import com.github.son_daehyeon.domain.project.dto.request.CreateProjectRequest;
 import com.github.son_daehyeon.domain.project.dto.request.InviteProjectRequest;
 import com.github.son_daehyeon.domain.project.dto.response.ProjectResponse;
