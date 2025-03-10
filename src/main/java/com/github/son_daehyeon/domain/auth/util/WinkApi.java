@@ -27,7 +27,7 @@ public class WinkApi {
 
 		try (UnirestInstance instance = Unirest.spawnInstance()) {
 
-			HttpResponse<JsonNode> response = instance.post("https://wink.kookmin.ac.kr/api/application/oauth/token")
+			HttpResponse<JsonNode> response = instance.post("https://api.wink.io.kr/application/oauth/token")
 				.header("Content-Type", "application/json")
 				.body(Map.ofEntries(
 					Map.entry("clientId", winkProperty.getClientId()),

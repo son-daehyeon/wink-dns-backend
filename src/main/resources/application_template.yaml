@@ -24,6 +24,10 @@ app:
     user: root@pam
     name: api
     token: (token)
+  aws:
+    access-key: (access-key)
+    secret-key: (secret-key)
+    region: ap-northeast-2
 
 server:
   servlet:

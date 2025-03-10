@@ -38,4 +38,5 @@ dependencies {
     implementation("com.auth0:java-jwt:4.4.0")
     implementation("com.konghq:unirest-java-core:4.4.5")
     implementation("com.konghq:unirest-objectmapper-jackson:4.2.9")
+    implementation("software.amazon.awssdk:route53:2.30.36")
 }
