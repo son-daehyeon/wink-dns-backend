@@ -39,17 +39,17 @@ public class RecordService {
 
         if (recordRepository.existsByName(dto.name())) throw new DuplicatedRecordNameException(dto.name());
 
-        Record record = recordRepository.save(
-            Record.builder()
-                .user(user)
-                .name(dto.name() + ".wink.io.kr")
-                .type(RRType.valueOf(dto.type()))
-                .ttl(dto.ttl())
-                .record(dto.records())
-                .build()
-        );
+        Record record = Record.builder()
+            .user(user)
+            .name(dto.name() + ".wink.io.kr")
+            .type(RRType.valueOf(dto.type()))
+            .ttl(dto.ttl())
+            .record(dto.records())
+            .build();
 
         route53Util.create(record);
+
+        record = recordRepository.save(record);
 
         return GetRecordResponse.builder()
             .record(record)
@@ -62,18 +62,18 @@ public class RecordService {
             .filter(record1 -> record1.getUser().equals(user))
             .orElseThrow(RecordNotFoundException::new);
 
-        record = recordRepository.save(
-            Record.builder()
-                .id(record.getId())
-                .user(record.getUser())
-                .name(record.getName())
-                .type(RRType.valueOf(dto.type()))
-                .ttl(dto.ttl())
-                .record(dto.records())
-                .build()
-        );
+        record = Record.builder()
+            .id(record.getId())
+            .user(record.getUser())
+            .name(record.getName())
+            .type(RRType.valueOf(dto.type()))
+            .ttl(dto.ttl())
+            .record(dto.records())
+            .build();
 
         route53Util.update(record);
+
+        record = recordRepository.save(record);
 
         return GetRecordResponse.builder()
             .record(record)
@@ -86,8 +86,8 @@ public class RecordService {
             .filter(record1 -> record1.getUser().equals(user))
             .orElseThrow(RecordNotFoundException::new);
 
-        recordRepository.delete(record);
-
         route53Util.delete(record);
+
+        recordRepository.delete(record);
     }
 }
