@@ -7,7 +7,6 @@ import com.github.son_daehyeon.domain.auth.dto.request.LoginRequest;
 import com.github.son_daehyeon.domain.auth.dto.request.RefreshTokenRequest;
 import com.github.son_daehyeon.domain.auth.dto.response.LoginResponse;
 import com.github.son_daehyeon.domain.auth.exception.AuthenticationFailException;
-import com.github.son_daehyeon.domain.auth.exception.FeeNotPaidException;
 import com.github.son_daehyeon.domain.auth.exception.InvalidRefreshTokenException;
 import com.github.son_daehyeon.domain.auth.repository.RefreshTokenRedisRepository;
 import com.github.son_daehyeon.domain.auth.schema.RefreshToken;
@@ -31,8 +30,6 @@ public class AuthService {
     public LoginResponse login(LoginRequest dto) {
 
         User user = userRepository.save(winkApi.fromToken(dto.token()));
-
-        if (!user.isFee()) throw new FeeNotPaidException();
 
         String accessToken = jwtUtil.generateAccessToken(user);
         String refreshToken = jwtUtil.generateRefreshToken(user);
