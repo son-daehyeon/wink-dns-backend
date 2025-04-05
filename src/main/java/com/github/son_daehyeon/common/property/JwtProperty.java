@@ -16,8 +16,5 @@ public class JwtProperty {
 	private String key;
 
 	@Min(1)
-	private int accessTokenExpirationHours;
-
-	@Min(1)
-	private int refreshTokenExpirationHours;
+	private int expirationHours;
 }

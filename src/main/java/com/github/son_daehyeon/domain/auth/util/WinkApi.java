@@ -6,7 +6,7 @@ import java.util.Objects;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.github.son_daehyeon.common.api.exception.ApiException;
+import com.github.son_daehyeon.common.api.ApiException;
 import com.github.son_daehyeon.common.property.WinkProperty;
 import com.github.son_daehyeon.domain.user.schema.User;
 
@@ -48,10 +48,8 @@ public class WinkApi {
 
 			return User.builder()
 				.id(user.getString("id"))
-				.email(user.getString("email"))
 				.name(user.getString("name"))
 				.avatar(user.get("avatar") instanceof String ? user.getString("avatar") : null)
-				.fee(user.getBoolean("fee"))
 				.build();
 		}
 	}

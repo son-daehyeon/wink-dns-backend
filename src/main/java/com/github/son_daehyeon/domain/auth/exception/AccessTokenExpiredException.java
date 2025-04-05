@@ -1,7 +1,8 @@
 package com.github.son_daehyeon.domain.auth.exception;
 
-import com.github.son_daehyeon.common.api.exception.ApiException;
 import org.springframework.http.HttpStatus;
+
+import com.github.son_daehyeon.common.api.ApiException;
 
 public class AccessTokenExpiredException extends ApiException {
 

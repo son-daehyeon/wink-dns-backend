@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
-import com.github.son_daehyeon.common.database.mongo.BaseSchema;
+import com.github.son_daehyeon.common.database.BaseSchema;
 import com.github.son_daehyeon.domain.user.schema.User;
 
 import lombok.Data;

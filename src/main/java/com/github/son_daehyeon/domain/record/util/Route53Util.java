@@ -3,7 +3,7 @@ package com.github.son_daehyeon.domain.record.util;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.github.son_daehyeon.common.api.exception.ApiException;
+import com.github.son_daehyeon.common.api.ApiException;
 import com.github.son_daehyeon.common.property.AwsProperty;
 import com.github.son_daehyeon.domain.record.schema.Record;
 

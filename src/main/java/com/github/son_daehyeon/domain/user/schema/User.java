@@ -1,6 +1,6 @@
 package com.github.son_daehyeon.domain.user.schema;
 
-import com.github.son_daehyeon.common.database.mongo.BaseSchema;
+import com.github.son_daehyeon.common.database.BaseSchema;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,9 +13,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 public class User extends BaseSchema {
 
-    String email;
     String name;
     String avatar;
-    boolean fee;
 }
 

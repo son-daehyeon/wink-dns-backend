@@ -9,8 +9,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.son_daehyeon.common.api.dto.response.ApiResponse;
-import com.github.son_daehyeon.common.api.exception.ApiException;
+import com.github.son_daehyeon.common.api.ApiException;
+import com.github.son_daehyeon.common.api.ApiResponse;
 import com.github.son_daehyeon.common.security.authentication.UserAuthentication;
 import com.github.son_daehyeon.domain.auth.exception.AccessTokenExpiredException;
 import com.github.son_daehyeon.domain.auth.exception.AuthenticationFailException;
