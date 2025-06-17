@@ -40,9 +40,9 @@ public class WinkApi {
 
 			JSONObject body = response.getBody().getObject();
 
-			int statusCode = body.getInt("statusCode");
+			boolean success = body.getBoolean("success");
 			Object error = body.get("error");
-			if (!Objects.isNull(error)) throw new ApiException(HttpStatus.valueOf(statusCode), error.toString());
+			if (!success) throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, error.toString());
 
 			JSONObject user = body.getJSONObject("content").getJSONObject("user");
 
